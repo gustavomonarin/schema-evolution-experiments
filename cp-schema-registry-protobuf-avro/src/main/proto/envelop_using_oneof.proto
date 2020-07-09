@@ -16,6 +16,7 @@ message EnvelopOneOf {
   oneof event {
     Harvested harvested = 4;
     RetailerReceived retailerReceived = 5;
+    DistributionCenterReceived distributionCenterReceived = 6;
   };
 
 }
@@ -25,6 +26,15 @@ message Harvested {
   Urn id = 1;
   google.protobuf.Timestamp harvestedAt = 2;
   Urn harvestedBy = 3;
+
+}
+
+
+message DistributionCenterReceived {
+
+  Urn id = 1;
+  google.protobuf.Timestamp receivedAt = 2;
+  Urn receivedBy = 3;
 
 }
 

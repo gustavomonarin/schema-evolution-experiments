@@ -27,6 +27,15 @@ message Harvested {
 
 }
 
+
+message DistributionCenterReceived {
+
+  Urn id = 1;
+  google.protobuf.Timestamp receivedAt = 2;
+  Urn receivedBy = 3;
+
+}
+
 message RetailerReceived {
 
   Urn id = 1;

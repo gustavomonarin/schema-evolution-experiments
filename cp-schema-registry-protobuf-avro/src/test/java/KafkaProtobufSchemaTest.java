@@ -69,7 +69,7 @@ public class KafkaProtobufSchemaTest {
     }
 
     @BeforeAll
-    public static void createTopicsIfNotExistent(){
+    public static void createTopicsIfNotExistent() {
         Properties adminProperties = new Properties();
         adminProperties.putAll(KafkaSimpleConfig.KAFKA_INFRA_CONFIG);
         AdminClient adminClient = AdminClient.create(adminProperties);
@@ -91,6 +91,16 @@ public class KafkaProtobufSchemaTest {
                                 .setHarvestedAt(now())
                                 .setHarvestedBy(randomUrn())
                                 .build()))
+                        .build(),
+                EnvelopAny.newBuilder()
+                        .setEvent(Any.pack(
+                                EnvelopAnyOuterClass.DistributionCenterReceived.newBuilder()
+                                        .setId(randomUrn())
+                                        .setReceivedAt(now())
+                                        .setReceivedBy(randomUrn())
+                                        .build()
+                                )
+                        )
                         .build(),
                 EnvelopAny.newBuilder()
                         .setEvent(Any.pack(EnvelopAnyOuterClass.RetailerReceived.newBuilder()
@@ -117,6 +127,8 @@ public class KafkaProtobufSchemaTest {
 
                         if (event.is(EnvelopAnyOuterClass.Harvested.class)) {
                             log("Handling typed harvested ev %s", event.unpack(EnvelopAnyOuterClass.Harvested.class));
+                        } else if (event.is(EnvelopAnyOuterClass.DistributionCenterReceived.class)){
+                            log("Handling new typed distribution center received ev %s", event.unpack(EnvelopAnyOuterClass.DistributionCenterReceived.class));
                         } else if (event.is(EnvelopAnyOuterClass.RetailerReceived.class)) {
                             log("Handling typed retailer received ev %s", event.unpack(EnvelopAnyOuterClass.RetailerReceived.class));
                         } else {
@@ -148,6 +160,12 @@ public class KafkaProtobufSchemaTest {
                                 .setHarvestedBy(randomUrn()))
                         .build(),
                 EnvelopOneOf.newBuilder()
+                        .setDistributionCenterReceived(EnvelopOneOfOuterClass.DistributionCenterReceived.newBuilder()
+                                .setId(randomUrn())
+                                .setReceivedAt(now())
+                                .setReceivedBy(randomUrn()))
+                        .build(),
+                EnvelopOneOf.newBuilder()
                         .setRetailerReceived(EnvelopOneOfOuterClass.RetailerReceived.newBuilder()
                                 .setId(randomUrn())
                                 .setReceivedAt(now())
@@ -170,6 +188,7 @@ public class KafkaProtobufSchemaTest {
 
                     switch (message.getEventCase()) {
                         case HARVESTED -> log("Handling typed harvested ev %s", message.getHarvested());
+                        case DISTRIBUTIONCENTERRECEIVED -> log("Handling typed distributioncenter received ev %s", message.getDistributionCenterReceived());
                         case RETAILERRECEIVED -> log("Handling typed retailer received ev %s", message.getRetailerReceived());
                         default -> log("Ignoring unknown event %s", message);
                     }
@@ -214,6 +233,7 @@ public class KafkaProtobufSchemaTest {
 
                     switch (record.value().getEventCase()) {
                         case HARVESTED -> log("Handling typed harvested ev %s", record.value().getHarvested());
+                        case DISTRIBUTIONCENTERRECEIVED -> log("Handling typed harvested ev %s", record.value().getDistributionCenterReceived());
                         case RETAILERRECEIVED -> log("Handling typed retailer received ev %s", record.value().getRetailerReceived());
                         default -> log("Ignoring unknown event %s", record.value());
                     }
@@ -238,7 +258,7 @@ public class KafkaProtobufSchemaTest {
                 .setIdentifier(UUID.randomUUID().toString());
     }
 
-    private void log(String format, Object ... args){
+    private void log(String format, Object... args) {
         System.out.printf(format, args);
     }
 
