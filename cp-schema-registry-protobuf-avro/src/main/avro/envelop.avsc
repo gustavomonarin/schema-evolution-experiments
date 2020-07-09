@@ -37,6 +37,25 @@
         },
         {
           "type": "record",
+          "name": "DistributionCenterReceived",
+          "doc": "DistributionCenterReceived event",
+          "fields": [
+            {
+              "name": "distributionCenterId",
+              "type": "string"
+            },
+            {
+              "name": "receivedAt",
+              "type": "string"
+            },
+            {
+              "name": "receivedBy",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "type": "record",
           "name": "RetailerReceived",
           "doc": "RetailerReceived event",
           "fields": [

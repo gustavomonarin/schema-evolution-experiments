@@ -1,4 +1,5 @@
 import avro.AvroEnvelop;
+import avro.DistributionCenterReceived;
 import avro.Harvested;
 import avro.RetailerReceived;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
@@ -90,6 +91,15 @@ public class KafkaAvroSchemaRegistryTest {
                 AvroEnvelop.newBuilder()
                         .setCausation(UUID.randomUUID().toString())
                         .setCorrelation(UUID.randomUUID().toString())
+                        .setData(DistributionCenterReceived.newBuilder()
+                                .setDistributionCenterId(UUID.randomUUID().toString())
+                                .setReceivedAt(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
+                                .setReceivedBy(UUID.randomUUID().toString())
+                                .build())
+                        .build(),
+                AvroEnvelop.newBuilder()
+                        .setCausation(UUID.randomUUID().toString())
+                        .setCorrelation(UUID.randomUUID().toString())
                         .setData(
                                 RetailerReceived.newBuilder()
                                         .setRetailerId(UUID.randomUUID().toString())
@@ -116,11 +126,15 @@ public class KafkaAvroSchemaRegistryTest {
                     // using jep-305 (experimental as of jdk 14)
 
                     Object event = record.value().getData();
+
                     if(event instanceof Harvested harvested){
                         System.out.println("Harvested event: " + harvested);
                     }
-                    else if (event instanceof RetailerReceived received){
-                        System.out.println("Retailer Received" + received);
+                    else if(event instanceof DistributionCenterReceived distributionCenterReceived){
+                        System.out.println("DistributionCenterReceived event: " + distributionCenterReceived);
+                    }
+                    else if (event instanceof RetailerReceived retailerReceived){
+                        System.out.println("Retailer Received" + retailerReceived);
                     }
                     else {
                         System.out.println("Unknown event " + event);
@@ -167,6 +181,9 @@ public class KafkaAvroSchemaRegistryTest {
                     Object event = record.value().getData();
                     if(event instanceof Harvested harvested){
                         System.out.println("Harvested event: " + harvested);
+                    }
+                    else if(event instanceof DistributionCenterReceived distributionCenterReceived){
+                        System.out.println("DistributionCenterReceived event: " + distributionCenterReceived);
                     }
                     else if (event instanceof RetailerReceived received){
                         System.out.println("Retailer Received" + received);
